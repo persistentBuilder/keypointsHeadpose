@@ -11,7 +11,7 @@ from torchvision import transforms, utils
 import random
 from skimage.transform import resize
 
-class retDataset(Dataset):
+class biwiDataset(Dataset):
 
     def __init__(self, path_file, trnFlg=0, transform=None):
         f = open(path_file,"r")
@@ -74,6 +74,10 @@ class retDataset(Dataset):
         lbl += 90
         lbl /= 180
         
+        """
+        #mirror image and adjusting the labels
+        #makes the best model more accurate but is inconsistent 
+
         func_choice = random.choice([True, False])
         if func_choice and self.trnFlg==1:
             t = torch.zeros((5,96,96))
@@ -82,7 +86,7 @@ class retDataset(Dataset):
             lbl[0] = 1-(lbl[0])
             lbl[2] = 1-(lbl[2])
             img = t
-        
+        """
         lbl =  torch.from_numpy(lbl)
         if self.transform:
             img = self.transform(img)
@@ -94,17 +98,17 @@ class retDataset(Dataset):
     def to_categorical(self, y, num_classes):
         return np.eye(num_classes, dtype='uint8')[y]
 
-    def kfldShuff(self, ks=[]):
+    def select_sets(self, sets=[]):
         self.Imgs = []
         self.gt = []
         self.lines = []
-        if len(ks)==0:
+        if len(sets)==0:
             for idx in range(0,len(self.alines)):    
                 self.Imgs.append(self.allImgs[idx])
                 self.gt.append(self.allgt[idx])   
         else:
             for idx in range(0,len(self.alines)):
-                if self.allsn[idx] in ks:
+                if self.allsn[idx] in sets:
                     self.Imgs.append(self.allImgs[idx])
                     self.gt.append(self.allgt[idx]) 
                     self.lines.append(self.alines[idx])  

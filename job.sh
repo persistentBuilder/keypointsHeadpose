@@ -9,4 +9,4 @@ source ~/packages/keras_tf_venv3/bin/activate
 module load cuda/9.0
 module load cudnn/7-cuda-9.0
 
-python3 singleFold.py
+python3 train_and_test.py
