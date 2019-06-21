@@ -113,12 +113,10 @@ if use_cuda:
     model.cuda()
     model = torch.nn.DataParallel(model, device_ids=range(torch.cuda.device_count()))
 #    torch.backends.cudnn.benchmark=True    #model = bmvcNet().to(device)
-optimizer = optim.Adam(model.parameters(), lr = 0.00001)
+optimizer = optim.Adam(model.parameters(), lr = 0.000001)
+#optimizer = optim.Adadelta(model.parameters())
 loss_func = torch.nn.MSELoss()
 train(NB_EPOCHS, it=1)
 test(prnt=True, it=1)
-
-
-#print error
 
 print(' MAE: Yaw %.5f, Pitch %.5f, Roll %.5f, Avg %.5f'%(fer[0], fer[1], fer[2], (fer[0]+fer[1]+fer[2])/3))

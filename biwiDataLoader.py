@@ -22,8 +22,9 @@ class biwiDataset(Dataset):
         self.allgt = []
         self.allsn = []
 
-        widthHM = 96
-        heightHM = 96
+        self.width = 96
+        self.height = 96
+        self.heatmaps_cnt = 5
         for idx in range(0,len(self.alines)):
                 line = self.alines[idx]
                 line = line.split()
@@ -33,14 +34,14 @@ class biwiDataset(Dataset):
                 prts = nm.split("_")
                 namehm = prts[0] + '_' + prts[1] + '_rgb_c' + line[0].split("/")[-2] + '_heatmaps.png'
                 isPrs = True
-                img = Image.open('/home/aryaman.g/projects/cscFcPs/allImgOut/'+namehm)
+                img = Image.open('all_heatmaps/'+namehm)
                 i=0
-                hmroi = (widthHM*i,0,widthHM*(i+1),heightHM)
+                hmroi = (self.width*i,0,self.width*(i+1),self.height)
                 hm = [] 
                 tmp = img.crop(hmroi)
                 hm.append(tmp)	
-                for i in range(1,5):	
-                    hmroi = (widthHM*(i+13),0,widthHM*(i+14),heightHM)
+                for i in range(1, self.heatmaps_cnt):	
+                    hmroi = (self.width*(i+13),0,self.width*(i+14),self.height)
                     tmp = img.crop(hmroi)
                     hm.append(tmp)	
                 self.allImgs.append(hm)
@@ -54,17 +55,17 @@ class biwiDataset(Dataset):
         margin = 12
         x = random.randint(0,margin)
         y = random.randint(0,margin)
-        xd = 96-random.randint(0,margin)    
-        yd = 96-random.randint(0,margin)   
+        xd = self.height-random.randint(0,margin)    
+        yd = self.width-random.randint(0,margin)   
         nhm = [] 
-        for i in range(0,5):
+        for i in range(0,self.heatmaps_cnt):
             nhm.append(hm[i].crop((x,y,xd,yd)))
         fhm = []       
-        for i in range(0,5):
-            fhm.append(np.array(nhm[i].resize((96, 96), PIL.Image.ANTIALIAS)))
+        for i in range(0,self.heatmaps_cnt):
+            fhm.append(np.array(nhm[i].resize((self.width, self.height), PIL.Image.ANTIALIAS)))
         
-        hmc = np.zeros((5,96,96))
-        for i in range(0,5):	
+        hmc = np.zeros((self.heatmaps_cnt,self.width, self.height))
+        for i in range(0,self.heatmaps_cnt):	
             hmc[i,:,:] = fhm[i]
       
         img = hmc
